@@ -53,25 +53,20 @@
 			<artifactId>mybatis-spring-boot-starter</artifactId>
 			<version>2.0.1</version>
 		</dependency>
+		<!--springboot 整合发送邮件-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+		<!--一个java库提供用于处理自然语言-->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.9</version>
+		</dependency>
 
 	</dependencies>
 
-	<!--<resources>
-		<resource>
-			<directory>src/main/java</directory>&lt;!&ndash;java文件的路径&ndash;&gt;
-			<includes>
-				<include>**/*.*</include>
-			</includes>
-			&lt;!&ndash; <filtering>false</filtering>&ndash;&gt;
-		</resource>
-		<resource>
-			<directory>src/main/resources</directory>&lt;!&ndash;资源文件的路径&ndash;&gt;
-			<includes>
-				<include>**/*.*</include>
-			</includes>
-			&lt;!&ndash; <filtering>false</filtering>&ndash;&gt;
-		</resource>
-	</resources>-->
 
 	<build>
 		<plugins>
