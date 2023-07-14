@@ -2,6 +2,7 @@ package com.nowcoder.community.service;
 
 import com.nowcoder.community.dao.UserMapper;
 import com.nowcoder.community.entity.User;
+import com.nowcoder.community.util.CommunityConstant;
 import com.nowcoder.community.util.CommunityUtil;
 import com.nowcoder.community.util.MailClient;
 import org.apache.commons.lang3.StringUtils;
@@ -18,7 +19,7 @@ import java.util.Map;
 import java.util.Random;
 
 @Service
-public class UserService {
+public class UserService implements CommunityConstant {
     @Autowired
     private UserMapper userMapper;
 
@@ -91,7 +92,7 @@ public class UserService {
         //创建用户
         userMapper.insertUser(user);
 
-        //设置激活页面
+        //设置激活页面  即邮件中的内容
         Context context = new Context();
         //向前端页面传输 要显示的用户名
         context.setVariable("email", user.getEmail());
@@ -106,5 +107,22 @@ public class UserService {
         mailClient.sendMail(user.getEmail(),"激活验证",content);
 
         return map;
+    }
+
+    //验证激活码
+    public int activation(int userId,String code){
+        User user = userMapper.selectById(userId);
+        if(user == null)    return ACTIVATION_FAILURE;
+        //如果当前用户已经激活过了==》重复激活    激活码相同==》激活成功    激活码不相同==》激活失败
+        if(user.getStatus() == 1){
+            return ACTIVATION_REPEAT;
+        }else if(user.getActivationCode().equals(code)){
+            //更新用户状态
+            userMapper.updateStatus(userId,1);
+            return ACTIVATION_SUCCESS;
+        }else{
+            return ACTIVATION_FAILURE;
+        }
+
     }
 }
