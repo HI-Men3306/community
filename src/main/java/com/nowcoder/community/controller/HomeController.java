@@ -4,7 +4,9 @@ import com.nowcoder.community.entity.DiscussPost;
 import com.nowcoder.community.entity.Page;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.DiscussPostService;
+import com.nowcoder.community.service.LikeService;
 import com.nowcoder.community.service.UserService;
+import com.nowcoder.community.util.CommunityConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,12 +19,15 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-public class HomeController {
+public class HomeController implements CommunityConstant {
     @Autowired
     private UserService userService;
 
     @Autowired
     private DiscussPostService discussPostService;
+
+    @Autowired
+    private LikeService  likeService;
 
 
     @RequestMapping(path = "/index", method = RequestMethod.GET)
@@ -32,7 +37,8 @@ public class HomeController {
         page.setRows(discussPostService.SelectCount(0));
         //分页信息的地址  干什么用的？  当点击分页之后 会发送一个请求，这里的path就是发送请求的地址
         //如何实现了当点击不同的页码时，跳转页面？
-        //当点击页码之后，会重新发送一个请求，而请求的地址就是page中的path，而且会在地址的后面拼接上current参数表明要跳转到第几页
+        //当点击页码之后，会重新发送一个请求，而请求的地址就是page中的path，
+        //而且会在地址的后面拼接上current参数并自动封装进page中表明要跳转到第几页
         //后面检索的数据会根据当前页数 查询对应范围内的数据
         page.setPath("/index");
 
@@ -47,6 +53,10 @@ public class HomeController {
                 map.put("post", post);
                 User user = userService.SelectUserById(post.getUserId());
                 map.put("user", user);
+
+                //查询对应帖子的点赞数量
+                long likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_POST, post.getId());
+                map.put("likeCount",likeCount);
                 discussPosts.add(map);
             }
         }
@@ -94,5 +104,10 @@ public class HomeController {
         }
         model.addAttribute("discussPost", discussPosts);
         return "index2";
+    }
+
+    @RequestMapping(path = "/error", method = RequestMethod.GET)
+    public String getErrorPage() {
+        return "/error/500";
     }
 }

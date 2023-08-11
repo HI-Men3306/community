@@ -1,6 +1,8 @@
 package com.nowcoder.community.service;
 
+import com.nowcoder.community.dao.LoginTicketMapper;
 import com.nowcoder.community.dao.UserMapper;
+import com.nowcoder.community.entity.LoginTicket;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.util.CommunityConstant;
 import com.nowcoder.community.util.CommunityUtil;
@@ -27,6 +29,9 @@ public class UserService implements CommunityConstant {
     private TemplateEngine engine;//创建Thymeleaf模板引擎 用于发送HTML格式的邮件信息
 
     @Autowired
+    private LoginTicketMapper loginTicketMapper;
+
+    @Autowired
     private MailClient mailClient;
 
     @Value("${server.servlet.context-path}")
@@ -37,6 +42,58 @@ public class UserService implements CommunityConstant {
 
     public User SelectUserById(int id) {
         return userMapper.selectById(id);
+    }
+
+    public User selectUserByName(String username){
+        return userMapper.selectByName(username);
+    }
+
+    //用户登录
+    /*
+        expiredSeconds为设置的登录凭证的保存时间
+     */
+    public Map<String,Object> login(String username,String password,long expiredSeconds){
+        Map<String,Object> map = new HashMap<>();
+        //空值检查
+        if(StringUtils.isBlank(username)){
+            map.put("usernameMsg","账号不能为空！");
+            return map;
+        }
+        if(StringUtils.isBlank(password)){
+            map.put("passwordMsg","密码不能为空！");
+            return map;
+        }
+        //检查账号
+        User user = userMapper.selectByName(username);
+        if(user == null){
+            map.put("usernameMsg","账号不存在！");
+            return map;
+        }
+        //检查密码  因为数据库中存放的密码是加密过的  传进来的是明文 所以要加密之后再进行比对
+        String resPassword = CommunityUtil.md5(password + user.getSalt());
+        if(!user.getPassword().equals(resPassword)){
+            map.put("passwordMsg","密码错误！");
+            return map;
+        }
+        //检查是否激活
+        if(user.getStatus() == 0){
+            map.put("usernameMsg","账号未激活");
+            return map;
+        }
+        //账号密码都没问题  生成登录凭证
+        LoginTicket ticket = new LoginTicket();
+        ticket.setUserId(user.getId());
+        ticket.setTicket(CommunityUtil.GenerateUUID());
+        ticket.setExpired(new Date(System.currentTimeMillis() + expiredSeconds * 1000));
+        ticket.setStatus(0);
+        loginTicketMapper.insertLoginTicket(ticket);
+        map.put("ticket",ticket.getTicket());//返回用户的登录凭证  证明用户登录成功
+        return map;
+    }
+
+    //用户注销
+    public void logout(String ticket){//改变登录凭证的状态
+        loginTicketMapper.updateStatus(ticket,1);
     }
 
     //用户注册
@@ -102,6 +159,7 @@ public class UserService implements CommunityConstant {
         context.setVariable("url", url);
         //将context域作为参数 传递给"/mail/activation"视图模板 生成HTML格式的字符串
         //利用Thymeleaf模板生成的发送邮件中的HTML内容  以便在生成HTML电子邮件时使用上下文中的变量和属性。
+        //相当于发送的邮件本身就是一个Thymeleaf页面
         String content = engine.process("/mail/activation", context);
         //发送激活邮件        将生成的HTML格式的邮件内容通过mailClient发送给指定邮箱
         mailClient.sendMail(user.getEmail(),"激活验证",content);
@@ -124,5 +182,24 @@ public class UserService implements CommunityConstant {
             return ACTIVATION_FAILURE;
         }
 
+    }
+
+    //通过登录凭证码获取登录凭证信息
+    public LoginTicket getLoginTicket(String ticket){
+        return loginTicketMapper.selectByTicket(ticket);
+    }
+
+    //根据用户id更新头像地址
+    public int updateHeaderUrl(int id,String headerUrl){
+        return userMapper.updateHeader(id,headerUrl);
+    }
+
+    //同样使用加盐的方式更新用户密码
+    public int updatePassword(int id,String password){
+        //获取用户中的密码盐
+        String salt = userMapper.selectById(id).getSalt();
+        //根据加盐和新密码重新生成密码
+        String res = CommunityUtil.md5(password + salt);
+        return userMapper.updatePassword(id,res);
     }
 }

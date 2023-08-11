@@ -1,9 +1,7 @@
 package com.nowcoder.community.dao;
 
 import com.nowcoder.community.entity.DiscussPost;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -22,4 +20,13 @@ public interface DiscussPostMapper {
     //根据id查询
     @Select("select * from discuss_post where id = #{id}")
     DiscussPost selectDiscussPostById(@Param("id") int id);
+
+    //插入帖子
+    @Insert("insert into discuss_post (user_id,title,content,type,status,create_time,comment_count,score) values" +
+            "(#{userId},#{title},#{content},#{type},#{status},#{createTime},#{commentCount},#{score})")
+    int insertDiscussPost(DiscussPost post);
+
+    //更新帖子的评论数 id为修改帖子的id commentCount为修改值
+    @Update("update discuss_post set comment_count  = #{commentCount} where id = #{id}")
+    int updateCommentCount(int id,int commentCount);
 }

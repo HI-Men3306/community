@@ -1,3 +1,14 @@
+//当前项目的前缀访问路径
+var CONTEXT_PATH = "/community";
+//点赞中的实体类型为 帖子
+var ENTITY_TYPE_DISCUSS = 1;
+//点赞中的实体类型为 评论
+var ENTITY_TYPE_COMMENT = 2;
+//实体类型为人
+var ENTITY_TYPE_PEOPLE = 3;
+//点赞中的实体类型为 回复
+var ENTITY_TYPE_REPLY = 4;
+
 window.alert = function(message) {
 	if(!$(".alert-box").length) {
 		$("body").append(

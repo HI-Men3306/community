@@ -1,6 +1,11 @@
 package com.nowcoder.community.util;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.DigestUtils;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 //用于生成一些常规的数据  例如随机码   MD5加密
@@ -20,5 +25,26 @@ public class CommunityUtil {
         }
         //对key进行MD5加密
         return DigestUtils.md5DigestAsHex(key.getBytes());
+    }
+
+    //根据传入的参数生成json串
+    //响应状态码  0：正常   1：异常
+    public static String getJSONString(int code, String msg, Map<String, Object> map){
+        JSONObject json = new JSONObject();
+        json.put("code",code);
+        json.put("msg",msg);
+        if(map != null){
+            for(String key : map.keySet()){
+                json.put(key,map.get(key));
+            }
+        }
+        return json.toString();
+    }
+    public static String getJSONString(int code, String msg) {
+        return getJSONString(code, msg, null);
+    }
+
+    public static String getJSONString(int code) {
+        return getJSONString(code, null, null);
     }
 }

@@ -12,8 +12,10 @@ public class Page {
     private int limit = 10;
     // 数据总数(用于计算总页数)
     private int rows;
-    // 查询or请求路径(用于复用分页链接)  即当点击翻页时需要一个路径用来向指定的路径发送请求
-    //我的一些思考：（不知道对不对） 其实也可以不需要这个查询路径 因为我知道要向那个路径发送请求 完全可以写死   只不过这样就加大了代码的耦合
+    // 查询or请求路径
+    // 两个功能
+    // 1.同一套逻辑实现不同页面的分页功能
+    // 2.(用于实现查询页面的复用分页链接)  即当点击翻页时需要一个路径用来向指定的路径发送请求
     private String path;
 
     public int getCurrent() {
@@ -99,4 +101,13 @@ public class Page {
         return to > total ? total : to;
     }
 
+    @Override
+    public String toString() {
+        return "Page{" +
+                "current=" + current +
+                ", limit=" + limit +
+                ", rows=" + rows +
+                ", path='" + path + '\'' +
+                '}';
+    }
 }
