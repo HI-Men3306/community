@@ -3,6 +3,7 @@ package com.nowcoder.community.dao;
 import com.nowcoder.community.entity.Message;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
@@ -28,4 +29,19 @@ public interface MessageMapper {
     //设置私信状态 （已读 or 删除）
     @Update("update message set status = #{status} where id = #{id}")
     int setLetterStatus(int id,int status);
+
+    //查询某个主题下的最新系统通知
+    @Select("select * from message where id in " +
+            "(select max(id) from message where " +
+            "status != 2 and from_id = 1 and to_id = #{userId} and conversation_id = #{topic})")
+    Message selectLateSystemNotice(int userId,String topic);
+
+    //查询某个主题下的系统通知数量
+    @Select("select count(*) from message where staus != 2 and from_id = 1 " +
+            "and to_id = #{userId} and conversation_id = #{topic}")
+    int selectSystemNoticeCount(int userId,String topic);
+
+    //查询未读的系统通知数量 可查询所有主题的 或 指定主题的未读系统通知数量
+    int selectUnreadSystemNoticeCount(int userId,String topic);
+
 }

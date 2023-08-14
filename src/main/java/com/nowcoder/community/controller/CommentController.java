@@ -1,6 +1,10 @@
 package com.nowcoder.community.controller;
 
+import com.nowcoder.community.Event.EventProducer;
 import com.nowcoder.community.entity.Comment;
+import com.nowcoder.community.entity.DiscussPost;
+import com.nowcoder.community.entity.Event;
+import com.nowcoder.community.entity.Message;
 import com.nowcoder.community.service.CommentService;
 import com.nowcoder.community.service.DiscussPostService;
 import com.nowcoder.community.util.CommunityConstant;
@@ -28,6 +32,9 @@ public class CommentController implements CommunityConstant {
     @Autowired
     private HostHolder hostHolder;
 
+    @Autowired
+    private EventProducer eventProducer;
+
     //为什么要携带一个discussPostId？   因为添加成功评论之后，我们要重定向到帖子详情页面  而显示帖子详情controller需要帖子的id
     @RequestMapping(path = "/add/{discussPostId}",method = RequestMethod.POST)
     @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED)
@@ -46,6 +53,23 @@ public class CommentController implements CommunityConstant {
             //更新帖子的评论数
             discussPostService.updateCommentCount(comment.getEntityId(),commentCount);
         }
+
+        //触发评论事件 发送系统通知信息
+        Event event = new Event().setTopic(TOPIC_COMMENT)//设置事件主题
+                .setEntityType(comment.getEntityType())//设置事件的实体类型
+                .setEntityId(comment.getEntityId())//设置事件的实体id
+                .setData("postId",discussPostId)//设置评论的帖子编号 用于显示
+                .setUserId(hostHolder.getUser().getId());//设置触发事件的用户id
+        //设置事件的发送对象id
+        if(comment.getEntityType() == ENTITY_TYPE_POST){//评论对象为帖子
+            DiscussPost target = discussPostService.SelectById(comment.getEntityId());
+            event.setEntityUserId(target.getUserId());//设置要发送系统私信的用户id
+        }else if(comment.getEntityType() == ENTITY_TYPE_COMMENT){//评论对象为用户
+            Comment target = discussPostService.findCommentById(comment.getEntityId());
+            event.setEntityUserId(target.getUserId());//设置要发送系统私信的用户id
+        }
+        eventProducer.sendEvent(event);
+
         return "redirect:/discuss/detail/" + discussPostId;
     }
 }

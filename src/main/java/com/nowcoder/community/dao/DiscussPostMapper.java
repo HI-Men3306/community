@@ -1,6 +1,8 @@
 package com.nowcoder.community.dao;
 
+import com.nowcoder.community.entity.Comment;
 import com.nowcoder.community.entity.DiscussPost;
+import com.nowcoder.community.entity.Message;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -29,4 +31,7 @@ public interface DiscussPostMapper {
     //更新帖子的评论数 id为修改帖子的id commentCount为修改值
     @Update("update discuss_post set comment_count  = #{commentCount} where id = #{id}")
     int updateCommentCount(int id,int commentCount);
+
+    @Select("select * from comment where id = #{id}")
+    Comment findCommentById(int id);
 }

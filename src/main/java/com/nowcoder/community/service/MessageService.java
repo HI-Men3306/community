@@ -45,7 +45,6 @@ public class MessageService {
 
     //发送私信
     public int sendLetter(Message message){
-        System.out.println(message.getStatus());
         if(message != null){
             //对私信内容进行处理
             message.setContent(HtmlUtils.htmlEscape(message.getContent()));

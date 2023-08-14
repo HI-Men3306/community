@@ -26,11 +26,14 @@ public class ServiceLogAspect {
     }
 
     @Before("cutPoint()")
-    public void before(JoinPoint joinPoint) throws Exception{
+    public void before(JoinPoint joinPoint){
         //需要记录的日志信息为：
         // 用户[1.2.3.4](为用户IP地址),在[xxx](时间),访问了[com.nowcoder.community.service.xxx()].(什么方法)
         //获取访问用户的ip地址
-        ServletRequestAttributes attribute = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        ServletRequestAttributes attribute = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attribute == null) {
+            return;
+        }
         HttpServletRequest request = attribute.getRequest();
         String IP = request.getRemoteHost();
 
@@ -42,6 +45,6 @@ public class ServiceLogAspect {
         String MethodName = joinPoint.getSignature().getName();//获取方法名
         String target = typeName + "." + MethodName;//拼接起来访问的全类名方法
         //输出日志信息
-        logger.info(String.format("用户[%s],在[%s],访问了[%s].", IP, time, target));
+        //logger.info(String.format("用户[%s],在[%s],访问了[%s].", IP, time, target));
     }
 }

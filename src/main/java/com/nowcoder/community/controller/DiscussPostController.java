@@ -70,9 +70,12 @@ public class DiscussPostController implements CommunityConstant {
         //添加到model中
         model.addAttribute("post", post);
         model.addAttribute("user", user);
+
         //查询当前帖子的点赞数，并判断当前登录用户的点赞状态
         long likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_POST, post.getId());//点赞数量
-        int likeStatus = likeService.findEntityStatus(ENTITY_TYPE_POST, post.getId(), hostHolder.getUser().getId());//当前用户点赞状态
+        //查询当前登录用户对该用户的点赞状态
+        int likeStatus = hostHolder.getUser() == null ? 0 :
+                likeService.findEntityStatus(ENTITY_TYPE_POST,post.getId(),hostHolder.getUser().getId());
         //添加到model中
         model.addAttribute("likeCount", likeCount);
         model.addAttribute("likeStatus", likeStatus);
@@ -113,8 +116,9 @@ public class DiscussPostController implements CommunityConstant {
             commentVO.put("replyCount", commentService.findCommentCount(ENTITY_TYPE_COMMENT, comment.getId()));
             //查询当前评论的点赞数 并判断当前登录用户的点赞状态
             commentVO.put("VOLikeCount",likeService.findEntityLikeCount(ENTITY_TYPE_COMMENT, comment.getId()));//点赞数
-            commentVO.put("VOLikeStatus",likeService.findEntityStatus(
-                    ENTITY_TYPE_COMMENT,comment.getId(),hostHolder.getUser().getId()));//当前用户点赞状态
+            int VOLikeStatus = hostHolder.getUser() == null ? 0 :
+                    likeService.findEntityStatus(ENTITY_TYPE_COMMENT,comment.getId(),hostHolder.getUser().getId());
+            commentVO.put("VOLikeStatus",VOLikeStatus);//当前用户点赞状态
 
 
             //存放该评论的所有回复信息
@@ -135,8 +139,9 @@ public class DiscussPostController implements CommunityConstant {
                 replyVO.put("target", target);
                 //查询回复的点赞数 并判断当前登录用户的点赞状态
                 replyVO.put("replyLikeCount",likeService.findEntityLikeCount(ENTITY_TYPE_COMMENT,reply.getId()));//当前回复的点赞数
-                replyVO.put("replyLikeStatus",likeService.findEntityStatus(
-                        ENTITY_TYPE_COMMENT,reply.getId(),hostHolder.getUser().getId()));//当前用户点赞状态
+                int replyLikeStatus = hostHolder.getUser() == null ? 0:
+                        likeService.findEntityStatus(ENTITY_TYPE_COMMENT,reply.getId(),hostHolder.getUser().getId());
+                replyVO.put("replyLikeStatus",replyLikeStatus);//当前用户点赞状态
 
                 //将回复添加进回复列表中
                 replyVOList.add(replyVO);

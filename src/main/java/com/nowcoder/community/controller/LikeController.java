@@ -1,5 +1,8 @@
 package com.nowcoder.community.controller;
 
+import com.nowcoder.community.Event.EventProducer;
+import com.nowcoder.community.annotation.LoginRequired;
+import com.nowcoder.community.entity.Event;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.LikeService;
 import com.nowcoder.community.util.CommunityConstant;
@@ -17,13 +20,18 @@ import java.util.HashMap;
 public class LikeController implements CommunityConstant {
     @Autowired
     private LikeService likeService;
+
     @Autowired
     private HostHolder hostHolder;
+
+    @Autowired
+    private EventProducer eventProducer;
 
     //点赞功能
     @RequestMapping(path = "/like",method = RequestMethod.POST)
     @ResponseBody
-    public String like(int entityType,int entityId,int entityUserId){
+    //@LoginRequired//需要用户登录后才能进行点赞
+    public String like(int entityType,int entityId,int entityUserId,int postId){
         User user = hostHolder.getUser();
         //点赞
         likeService.like(entityType,entityId,user.getId(),entityUserId);
@@ -36,6 +44,17 @@ public class LikeController implements CommunityConstant {
         map.put("likeCount",entityLikeCount);
         map.put("likeStatus",entityStatus);
 
+        //如果是点赞   则触发点赞事件  发送站内消息
+        if(entityStatus == LIKED){
+            Event event = new Event().setTopic(TOPIC_LIKE)
+                    .setEntityType(entityType)
+                    .setEntityId(entityId)
+                    .setUserId(hostHolder.getUser().getId())
+                    .setEntityUserId(entityUserId)
+                    .setData("postId",postId);
+            //发送消息
+            eventProducer.sendEvent(event);
+        }
         return CommunityUtil.getJSONString(CODE_SUCCESS,null,map);
     }
 

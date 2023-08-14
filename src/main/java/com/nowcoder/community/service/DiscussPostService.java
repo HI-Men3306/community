@@ -1,7 +1,9 @@
 package com.nowcoder.community.service;
 
 import com.nowcoder.community.dao.DiscussPostMapper;
+import com.nowcoder.community.entity.Comment;
 import com.nowcoder.community.entity.DiscussPost;
+import com.nowcoder.community.entity.Message;
 import com.nowcoder.community.util.SensitiveFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,10 @@ public class DiscussPostService {
 
     public DiscussPost SelectById(int id){
         return discussPostMapper.selectDiscussPostById(id);
+    }
+
+    public Comment findCommentById(int id){
+        return discussPostMapper.findCommentById(id);
     }
 
     //添加帖子

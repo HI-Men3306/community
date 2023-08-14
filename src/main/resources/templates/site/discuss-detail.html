@@ -84,7 +84,7 @@
 							发布于 <b  th:text="${#dates.format(post.createTime,'yyyy-MM-dd HH:mm:ss')}">2019-04-15 15:32:18</b>
 							<ul class="d-inline float-right">
 								<li class="d-inline ml-2">
-									<a href="javascript:;" th:onclick="|like(this,ENTITY_TYPE_DISCUSS,${post.id},${post.userId})|" class="text-primary">
+									<a href="javascript:;" th:onclick="|like(this,ENTITY_TYPE_DISCUSS,${post.id},${post.userId},${post.id})|" class="text-primary">
 										<b th:text="${likeStatus==0?'赞':'已赞'}">赞</b> <i th:text="${likeCount}">11</i>
 									</a>
 								</li>
@@ -137,7 +137,7 @@
 								<span>发布于 <b th:text="${#dates.format(cvo.comment.createTime,'yyyy-MM-dd HH:mm:ss')}">2019-04-15 15:32:18</b></span>
 								<ul class="d-inline float-right">
 									<li class="d-inline ml-2">
-										<a href="javascript:;" th:onclick="|like(this,ENTITY_TYPE_COMMENT,${cvo.comment.id},${cvo.user.id})|"class="text-primary">
+										<a href="javascript:;" th:onclick="|like(this,ENTITY_TYPE_COMMENT,${cvo.comment.id},${cvo.user.id},${post.id})|"class="text-primary">
 											<b th:text="${cvo.VOLikeStatus==0?'赞':'已赞'}">赞</b> (<i th:text="${cvo.VOLikeCount}">11</i>)
 										</a>
 									</li>
@@ -163,7 +163,7 @@
 										<span th:text="${#dates.format(pvo.reply.createTime,'yyyy-MM-dd HH:mm:ss')}">2019-04-15 15:32:18</span>
 										<ul class="d-inline float-right">
 											<li class="d-inline ml-2">
-												<a href="javascript:;" th:onclick="|like(this,ENTITY_TYPE_COMMENT,${pvo.reply.id},${pvo.reply.userId})|" class="text-primary">
+												<a href="javascript:;" th:onclick="|like(this,ENTITY_TYPE_COMMENT,${pvo.reply.id},${pvo.reply.userId},${post.id})|" class="text-primary">
 													<b th:text="${pvo.replyLikeStatus==0?'赞':'已赞'}">赞</b> (<i th:text="${pvo.replyLikeCount}">11</i>)
 												</a>
 											</li>
