@@ -37,11 +37,17 @@ public interface MessageMapper {
     Message selectLateSystemNotice(int userId,String topic);
 
     //查询某个主题下的系统通知数量
-    @Select("select count(*) from message where staus != 2 and from_id = 1 " +
+    @Select("select count(*) from message where status != 2 and from_id = 1 " +
             "and to_id = #{userId} and conversation_id = #{topic}")
     int selectSystemNoticeCount(int userId,String topic);
 
     //查询未读的系统通知数量 可查询所有主题的 或 指定主题的未读系统通知数量
     int selectUnreadSystemNoticeCount(int userId,String topic);
 
+    //分页查询系统通知列表详情
+    @Select("select * from message where status != 2 and from_id = 1 " +
+            "and to_id = #{userId} and conversation_id = #{topic} " +
+            "order by create_time desc " +
+            "limit #{offset}, #{limit}")
+    List<Message> selectNoticeDetail(int userId,String topic,int offset,int limit);
 }

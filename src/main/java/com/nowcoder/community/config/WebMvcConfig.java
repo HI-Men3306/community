@@ -3,6 +3,7 @@ package com.nowcoder.community.config;
 import com.nowcoder.community.controller.interceptor.AlphaInterceptor;
 import com.nowcoder.community.controller.interceptor.LoginRequiredInterceptor;
 import com.nowcoder.community.controller.interceptor.LoginTicketInterceptor;
+import com.nowcoder.community.controller.interceptor.UnreadMessageInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -20,6 +21,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Autowired
     private LoginRequiredInterceptor loginRequiredInterceptor;
 
+    @Autowired
+    private UnreadMessageInterceptor unreadMessageInterceptor;
+
     /*
     * 拦截器的拦截处理顺序是按照注册的顺序来的
     * 在下面中我先注册了LoginTicket登录凭证的拦截器
@@ -36,6 +40,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(loginTicketInterceptor)
                 .excludePathPatterns("/**/*.css","/**/*.js","/**/*.png","/**/*.jpg","/**/*.jpeg");
         registry.addInterceptor(loginRequiredInterceptor)
+                .excludePathPatterns("/**/*.css","/**/*.js","/**/*.png","/**/*.jpg","/**/*.jpeg");
+        registry.addInterceptor(unreadMessageInterceptor)
                 .excludePathPatterns("/**/*.css","/**/*.js","/**/*.png","/**/*.jpg","/**/*.jpeg");
     }
 }

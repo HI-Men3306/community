@@ -58,4 +58,24 @@ public class MessageService {
     public int setLetterStatus(int id,int status){
         return messageMapper.setLetterStatus(id,status);
     }
+
+    //查询某个主题下的最新系统通知详情
+    public Message selectLastTopicSystemNotice(int userId,String topic){
+        return messageMapper.selectLateSystemNotice(userId, topic);
+    }
+
+    //查询某个主题下的系统通知数量
+    public int selectTopicSystemNoticeCount(int userId,String topic){
+        return messageMapper.selectSystemNoticeCount(userId,topic);
+    }
+
+    //查询某个主题  或  所有的未读系统通知数量
+    public int selectTopicUnreadSystemNoticeCount(int userId,String topic){
+        return messageMapper.selectUnreadSystemNoticeCount(userId,topic);
+    }
+
+    //分页查询系统通知详情
+    public List<Message> selectSystemNoticeDetailByPage(int userId,String topic,int offset,int limit){
+        return messageMapper.selectNoticeDetail(userId, topic, offset, limit);
+    }
 }

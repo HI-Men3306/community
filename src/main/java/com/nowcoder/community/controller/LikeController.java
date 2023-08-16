@@ -51,7 +51,7 @@ public class LikeController implements CommunityConstant {
                     .setEntityId(entityId)
                     .setUserId(hostHolder.getUser().getId())
                     .setEntityUserId(entityUserId)
-                    .setData("postId",postId);
+                    .setData("postId",postId);//设置该点赞发生的帖子编号  用户后面使用
             //发送消息
             eventProducer.sendEvent(event);
         }

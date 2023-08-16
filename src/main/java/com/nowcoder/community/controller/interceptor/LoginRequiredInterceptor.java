@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
 
+//这个过滤器用于 过滤未登录用户访问敏感资源地址
 @Component
 public class LoginRequiredInterceptor implements HandlerInterceptor {
     @Autowired

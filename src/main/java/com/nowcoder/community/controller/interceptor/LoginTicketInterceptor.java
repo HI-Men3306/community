@@ -17,6 +17,7 @@ import java.util.Date;
 
 import static com.nowcoder.community.util.CookieUtil.getTicket;
 
+//这个过滤器用于 登录当前用户
 @Component
 public class LoginTicketInterceptor implements HandlerInterceptor {
     @Autowired
