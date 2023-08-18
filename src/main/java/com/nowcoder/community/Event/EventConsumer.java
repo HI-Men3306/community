@@ -1,8 +1,11 @@
 package com.nowcoder.community.Event;
 
 import com.alibaba.fastjson.JSONObject;
+import com.nowcoder.community.dao.DiscussPostMapper;
+import com.nowcoder.community.entity.DiscussPost;
 import com.nowcoder.community.entity.Event;
 import com.nowcoder.community.entity.Message;
+import com.nowcoder.community.service.ElasticsearchService;
 import com.nowcoder.community.service.MessageService;
 import com.nowcoder.community.util.CommunityConstant;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -23,6 +26,12 @@ public class EventConsumer implements CommunityConstant {
 
     @Autowired
     private MessageService messageService;
+
+    @Autowired
+    private DiscussPostMapper discussPostMapper;
+
+    @Autowired
+    private ElasticsearchService searchService;
 
     @KafkaListener(topics = {TOPIC_COMMENT, TOPIC_LIKE, TOPIC_FOLLOW})//kafka监听的topic通道，从中获取消息信息
     public void handleCommentMessage(ConsumerRecord record) {
@@ -58,5 +67,24 @@ public class EventConsumer implements CommunityConstant {
         message.setContent(JSONObject.toJSONString(content));
         //创建系统通知进入mysql中
         messageService.sendLetter(message);
+    }
+
+    @KafkaListener(topics = {TOPIC_PUBLISH})//kafka监听的topic通道，从中获取消息信息
+    public void handlePublishMessage(ConsumerRecord record) {
+        //从kafka中获取中关于帖子的消息   将该帖子的信息保存进elasticsearch中
+        if (record == null || record.value() == null) {
+            logger.error("消息的内容为空!");
+            return;
+        }
+
+        Event event = JSONObject.parseObject(record.value().toString(), Event.class);
+        if (event == null) {
+            logger.error("消息格式错误!");
+            return;
+        }
+
+        //查询队列中存放的帖子
+        DiscussPost discussPost = discussPostMapper.selectDiscussPostById(event.getEntityId());
+        searchService.saveDiscussPost(discussPost);
     }
 }

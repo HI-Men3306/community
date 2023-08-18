@@ -24,8 +24,9 @@ public interface DiscussPostMapper {
     DiscussPost selectDiscussPostById(@Param("id") int id);
 
     //插入帖子
-    @Insert("insert into discuss_post (user_id,title,content,type,status,create_time,comment_count,score) values" +
-            "(#{userId},#{title},#{content},#{type},#{status},#{createTime},#{commentCount},#{score})")
+    @Insert({"insert into discuss_post (user_id,title,content,type,status,create_time,comment_count,score) values" +
+            "(#{userId},#{title},#{content},#{type},#{status},#{createTime},#{commentCount},#{score})"})
+    @Options(useGeneratedKeys=true,keyProperty="id")
     int insertDiscussPost(DiscussPost post);
 
     //更新帖子的评论数 id为修改帖子的id commentCount为修改值
@@ -34,4 +35,7 @@ public interface DiscussPostMapper {
 
     @Select("select * from comment where id = #{id}")
     Comment findCommentById(int id);
+
+    @Select("select id from discuss_post")
+    List<Integer> selectAllDiscussPostId();
 }

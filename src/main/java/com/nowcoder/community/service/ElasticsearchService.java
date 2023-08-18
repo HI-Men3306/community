@@ -1,8 +1,7 @@
-package com.nowcoder.community;
+package com.nowcoder.community.service;
 
-import com.nowcoder.community.dao.DiscussPostMapper;
-import com.nowcoder.community.entity.DiscussPost;
 import com.nowcoder.community.dao.elasticsearch.DiscussPostRepository;
+import com.nowcoder.community.entity.DiscussPost;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
@@ -11,10 +10,7 @@ import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,65 +20,39 @@ import org.springframework.data.elasticsearch.core.aggregation.AggregatedPage;
 import org.springframework.data.elasticsearch.core.aggregation.impl.AggregatedPageImpl;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@ContextConfiguration(classes = CommunityApplication.class)
-public class elasticsearchTest {
-
-    @Autowired
-    private DiscussPostMapper discussMapper;
-
-    @Autowired
-    private DiscussPostRepository discussRepository;
+@Service
+public class ElasticsearchService {
 
     @Autowired
     private ElasticsearchTemplate elasticTemplate;
 
-    @Test
-    public void insertTest(){
-        discussRepository.save(discussMapper.selectDiscussPostById(241));
-        discussRepository.save(discussMapper.selectDiscussPostById(242));
-        discussRepository.save(discussMapper.selectDiscussPostById(243));
+    @Autowired
+    private DiscussPostRepository discussPostRepository;
+    //添加帖子
+    public void saveDiscussPost(DiscussPost discussPost){
+        discussPostRepository.save(discussPost);
     }
 
-    @Test
-    public void insertSomeData(){
-        discussRepository.saveAll(discussMapper.selectDiscussPost(101,0,100));
-        discussRepository.saveAll(discussMapper.selectDiscussPost(102,0,100));
-        discussRepository.saveAll(discussMapper.selectDiscussPost(103,0,100));
+    //删除帖子
+    public void deleteDiscussPost(DiscussPost discussPost){
+        discussPostRepository.delete(discussPost);
     }
 
-    @Test
-    public void insertAllDiscussPost(){
-        List<Integer> res = discussMapper.selectAllDiscussPostId();
-        for (Integer re : res) {
-            discussRepository.save(discussMapper.selectDiscussPostById(re));
-        }
-    }
-
-    @Test
-    public void testDelete() {
-        // discussRepository.deleteById(231);
-        discussRepository.deleteAll();
-    }
-
-    //查询elasticsearch搜索出并处理过后的数据条
-    @Test
-    public void testSearchByTemplate() {
+    //关键字查询帖子   参数：搜索关键字    查询起始页数    显示条数
+    public Page<DiscussPost> searchDiscussPost(String keyword, int current, int limit){
         SearchQuery searchQuery = new NativeSearchQueryBuilder()
                 //设置搜索的词条     需要搜索词条所在的字段
-                .withQuery(QueryBuilders.multiMatchQuery("互联网寒冬", "title", "content"))
+                .withQuery(QueryBuilders.multiMatchQuery(keyword, "title", "content"))
                 .withSort(SortBuilders.fieldSort("type").order(SortOrder.DESC))//设置搜索结果的排序依据字段
                 .withSort(SortBuilders.fieldSort("score").order(SortOrder.DESC))//设置搜索结果的排序依据字段
                 .withSort(SortBuilders.fieldSort("createTime").order(SortOrder.DESC))//设置搜索结果的排序依据字段
-                .withPageable(PageRequest.of(0, 10))//设置分页查询的显示配置
+                .withPageable(PageRequest.of(current, limit))//设置分页查询的显示配置
                 //设置在指定字段中搜索出来的词条 进行的处理（这里是直接加标签显示）
                 .withHighlightFields(
                         new HighlightBuilder.Field("title").preTags("<em>").postTags("</em>"),
@@ -141,13 +111,7 @@ public class elasticsearchTest {
                         hits.getTotalHits(), response.getAggregations(), response.getScrollId(), hits.getMaxScore());
             }
         });
-
-        System.out.println(page.getTotalElements());
-        System.out.println(page.getTotalPages());
-        System.out.println(page.getNumber());
-        System.out.println(page.getSize());
-        for (DiscussPost post : page) {
-            System.out.println(post);
-        }
+        return page;
     }
+
 }
