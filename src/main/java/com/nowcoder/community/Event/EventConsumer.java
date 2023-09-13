@@ -69,6 +69,7 @@ public class EventConsumer implements CommunityConstant {
         messageService.sendLetter(message);
     }
 
+    //消费 发布帖子主题 将帖子的信息存入elasticsearch中
     @KafkaListener(topics = {TOPIC_PUBLISH})//kafka监听的topic通道，从中获取消息信息
     public void handlePublishMessage(ConsumerRecord record) {
         //从kafka中获取中关于帖子的消息   将该帖子的信息保存进elasticsearch中
@@ -85,6 +86,26 @@ public class EventConsumer implements CommunityConstant {
 
         //查询队列中存放的帖子
         DiscussPost discussPost = discussPostMapper.selectDiscussPostById(event.getEntityId());
+        //将帖子存放进elasticsearch中
         searchService.saveDiscussPost(discussPost);
+    }
+
+    //消费 删除帖子主题  将elasticsearch中对应的帖子删除
+    @KafkaListener(topics = TOPIC_DELETE)//kafka监听的topic通道，从中获取消息信息
+    public void handleDeleteMessage(ConsumerRecord record) {
+        //从kafka中获取中关于帖子的消息   将该帖子的信息保存进elasticsearch中
+        if (record == null || record.value() == null) {
+            logger.error("消息的内容为空!");
+            return;
+        }
+
+        Event event = JSONObject.parseObject(record.value().toString(), Event.class);
+        if (event == null) {
+            logger.error("消息格式错误!");
+            return;
+        }
+
+        //将帖子从elasticsearch中删除
+        searchService.deleteDiscussPostById(event.getEntityId());
     }
 }

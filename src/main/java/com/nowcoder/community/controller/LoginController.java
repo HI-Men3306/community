@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -149,6 +150,8 @@ public class LoginController implements CommunityConstant {
     //@CookieValue注解会从前端cookie中获取名为ticket的cookie对象并赋值给指定参数
     public String logout(@CookieValue("ticket") String ticket){
         userService.logout(ticket);
+        //清理当前securityContext中的认证结果
+        SecurityContextHolder.clearContext();
         return "redirect:/login";
     }
 }

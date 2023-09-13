@@ -166,4 +166,62 @@ public class DiscussPostController implements CommunityConstant {
 
         return "/site/discuss-detail";
     }
+
+
+    //将帖子置顶
+    @RequestMapping(path = "/top",method =RequestMethod.POST)
+    @ResponseBody
+    public String setTop(int id){
+        //帖子类型设置为置顶
+        discussPostService.updateType(id,DISCUSS_STATUS_TOP);
+
+        System.out.println("置顶");
+
+        //修改elasticsearch中的数据  修改帖子之后重新发布 elasticsearch会覆盖掉之前的数据
+        Event event = new Event().setEntityId(id)//存放帖子id
+                .setUserId(hostHolder.getUser().getId())//作者id
+                .setEntityType(ENTITY_TYPE_POST)//事件类型为 帖子
+                .setTopic(TOPIC_PUBLISH);//事件主题为 发布
+        eventProducer.sendEvent(event);
+
+        return CommunityUtil.getJSONString(0);
+    }
+
+    //将帖子加入精华帖
+    @RequestMapping(path = "/essence",method =RequestMethod.POST)
+    @ResponseBody
+    public String setEssence(int id){
+        //帖子状态设置为精华
+        discussPostService.updateStatus(id,DISCUSS_TYPE_ESSENCE);
+
+        System.out.println("精华");
+
+        //修改elasticsearch中的数据  修改帖子之后重新发布 elasticsearch会覆盖掉之前的数据
+        Event event = new Event().setEntityId(id)//存放帖子id
+                .setUserId(hostHolder.getUser().getId())//作者id
+                .setEntityType(ENTITY_TYPE_POST)//事件类型为 帖子
+                .setTopic(TOPIC_PUBLISH);//事件主题为 发布
+        eventProducer.sendEvent(event);
+
+        return CommunityUtil.getJSONString(0);
+    }
+
+    //将帖子拉黑
+    @RequestMapping(path = "/delete",method =RequestMethod.POST)
+    @ResponseBody
+    public String setDelete(int id){
+        //帖子状态设置为拉黑
+        discussPostService.updateStatus(id,DISCUSS_TYPE_DELETE);
+
+        System.out.println("拉黑");
+
+        //当帖子被拉黑之后   要在elasticsearch中删除帖子
+        Event event = new Event().setEntityId(id)//存放帖子id
+                .setUserId(hostHolder.getUser().getId())//作者id
+                .setEntityType(ENTITY_TYPE_POST)//事件类型为 帖子
+                .setTopic(TOPIC_DELETE);//事件主题为 删除
+        eventProducer.sendEvent(event);
+
+        return CommunityUtil.getJSONString(0);
+    }
 }

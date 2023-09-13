@@ -4,6 +4,8 @@ import com.nowcoder.community.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.List;
+
 @Mapper
 public interface UserMapper {
 
@@ -21,5 +23,7 @@ public interface UserMapper {
     int updateHeader(int id, String headerUrl);
 
     int updatePassword(int id, String password);
+
+    List<Integer> selectAllUserId();
 
 }

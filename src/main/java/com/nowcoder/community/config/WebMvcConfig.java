@@ -1,9 +1,6 @@
 package com.nowcoder.community.config;
 
-import com.nowcoder.community.controller.interceptor.AlphaInterceptor;
-import com.nowcoder.community.controller.interceptor.LoginRequiredInterceptor;
-import com.nowcoder.community.controller.interceptor.LoginTicketInterceptor;
-import com.nowcoder.community.controller.interceptor.UnreadMessageInterceptor;
+import com.nowcoder.community.controller.interceptor.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -15,11 +12,16 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Autowired
     private AlphaInterceptor alphaInterceptor;
 
+    //统计网站数据用的拦截器
+    @Autowired
+    private TotalDataInterceptor totalDataInterceptor;
+
     @Autowired
     private LoginTicketInterceptor loginTicketInterceptor;
 
-    @Autowired
-    private LoginRequiredInterceptor loginRequiredInterceptor;
+    //用于非法的路径请求  因为引入了security 所以security完全可以替代该拦截器
+    //@Autowired
+    //private LoginRequiredInterceptor loginRequiredInterceptor;
 
     @Autowired
     private UnreadMessageInterceptor unreadMessageInterceptor;
@@ -39,9 +41,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
         //拦截所有的页面请求 因为需要对当前用户登录状态进行判断无论其在什么页面上
         registry.addInterceptor(loginTicketInterceptor)
                 .excludePathPatterns("/**/*.css","/**/*.js","/**/*.png","/**/*.jpg","/**/*.jpeg");
-        registry.addInterceptor(loginRequiredInterceptor)
-                .excludePathPatterns("/**/*.css","/**/*.js","/**/*.png","/**/*.jpg","/**/*.jpeg");
+        //registry.addInterceptor(loginRequiredInterceptor)
+        //        .excludePathPatterns("/**/*.css","/**/*.js","/**/*.png","/**/*.jpg","/**/*.jpeg");
         registry.addInterceptor(unreadMessageInterceptor)
+                .excludePathPatterns("/**/*.css","/**/*.js","/**/*.png","/**/*.jpg","/**/*.jpeg");
+        registry.addInterceptor(totalDataInterceptor)
                 .excludePathPatterns("/**/*.css","/**/*.js","/**/*.png","/**/*.jpg","/**/*.jpeg");
     }
 }

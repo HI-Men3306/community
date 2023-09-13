@@ -40,8 +40,8 @@ public class ElasticsearchService {
     }
 
     //删除帖子
-    public void deleteDiscussPost(DiscussPost discussPost){
-        discussPostRepository.delete(discussPost);
+    public void deleteDiscussPostById(int id){
+        discussPostRepository.deleteById(id);
     }
 
     //关键字查询帖子   参数：搜索关键字    查询起始页数    显示条数

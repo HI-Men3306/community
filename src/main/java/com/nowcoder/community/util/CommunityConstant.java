@@ -70,7 +70,53 @@ public interface CommunityConstant {
     String TOPIC_PUBLISH = "publish";
 
     /**
+     * 主题: 删除
+     */
+    String TOPIC_DELETE = "delete";
+
+    /**
      * 系统用户ID
      */
     int SYSTEM_USER_ID = 1;
+
+
+    /**
+     * 权限: 普通用户
+     */
+    String AUTHORITY_USER = "user";
+
+    /**
+     * 权限: 管理员
+     */
+    String AUTHORITY_ADMIN = "admin";
+
+    /**
+     * 权限: 版主
+     */
+    String AUTHORITY_MODERATOR = "moderator";
+
+    /**
+     * 帖子类型:置顶
+     */
+    int DISCUSS_STATUS_TOP = 1;
+
+    /**
+     * 帖子类型:普通
+     */
+    int DISCUSS_STATUS_COMMON = 0;
+
+    /**
+     * 帖子状态：正常
+     */
+    int DISCUSS_TYPE_COMMON = 0;
+
+    /**
+     * 帖子状态：精华
+     */
+    int DISCUSS_TYPE_ESSENCE = 1;
+
+    /**
+     * 帖子状态：拉黑
+     */
+    int DISCUSS_TYPE_DELETE = 2;
 }

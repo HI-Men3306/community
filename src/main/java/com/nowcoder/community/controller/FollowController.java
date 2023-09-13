@@ -94,7 +94,6 @@ public class FollowController implements CommunityConstant {
 
 
     //获取用户的粉丝列表 基于分页
-    //获取用户的关注列表 基于分页
     @RequestMapping(path = "/getFans/{userId}",method = RequestMethod.GET)
     public String getFans(@PathVariable("userId") int userId, Model model, Page page){
         //设置分页信息

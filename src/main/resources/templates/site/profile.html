@@ -86,7 +86,7 @@
 									th:text="${hasFollowed?'已关注':'关注TA'}" th:if="${loginUser!=null&&loginUser.id!=user.id}">关注TA</button>
 						</h5>
 						<div class="text-muted mt-3">
-							<span>注册于 <i class="text-muted">2015-06-12 15:20:12</i></span>
+							<span>注册于 <i class="text-muted" th:text="${#dates.format(user.createTime,'yyyy-MM-dd HH:mm:ss')}">2015-06-12 15:20:12</i></span>
 						</div>
 						<div class="text-muted mt-3 mb-5">
 							<span>关注了 <a class="text-primary" th:href="@{|/getFollower/${user.id}|}" th:text="${followCount}">5</a> 人</span>

@@ -10,15 +10,13 @@ import com.nowcoder.community.util.MailClient;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.Thymeleaf;
 import org.thymeleaf.context.Context;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 @Service
 public class UserService implements CommunityConstant {
@@ -201,5 +199,27 @@ public class UserService implements CommunityConstant {
         //根据加盐和新密码重新生成密码
         String res = CommunityUtil.md5(password + salt);
         return userMapper.updatePassword(id,res);
+    }
+
+    //根据用户id 查询用户持有的权限
+    public Collection<? extends GrantedAuthority> getAuthorities(int userId){
+        User user = this.SelectUserById(userId);
+
+        Collection<GrantedAuthority> list = new ArrayList<>();
+        list.add(new GrantedAuthority() {
+            @Override
+            public String getAuthority() {
+                //根据不同的用户类别 生成不同的用户权限
+                switch (user.getType()){
+                    case 1:
+                        return AUTHORITY_ADMIN;
+                    case 2:
+                        return AUTHORITY_MODERATOR;
+                    default:
+                        return AUTHORITY_USER;
+                }
+            }
+        });
+        return list;
     }
 }

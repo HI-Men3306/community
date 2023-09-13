@@ -29,6 +29,9 @@
         from user
         where email = #{email}
     </select>
+    <select id="selectAllUserId" resultType="java.lang.Integer">
+        select id from user;
+    </select>
 
     <insert id="insertUser" parameterType="User" keyProperty="id">
         insert into user (<include refid="insertFields"></include>)

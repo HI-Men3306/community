@@ -33,9 +33,19 @@ public interface DiscussPostMapper {
     @Update("update discuss_post set comment_count  = #{commentCount} where id = #{id}")
     int updateCommentCount(int id,int commentCount);
 
+    //根据id查询评论
     @Select("select * from comment where id = #{id}")
     Comment findCommentById(int id);
 
+    //查询所有的帖子id
     @Select("select id from discuss_post")
     List<Integer> selectAllDiscussPostId();
+
+    //修改帖子状态
+    @Update("update discuss_post set status = #{status} where id = #{id}")
+    int updateStatus(int id, int status);
+
+    //修改帖子类型
+    @Update("update discuss_post set type = #{type} where id = #{id}")
+    int updateType(int id, int type);
 }

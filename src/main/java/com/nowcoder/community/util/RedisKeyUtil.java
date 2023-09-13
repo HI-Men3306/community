@@ -7,6 +7,8 @@ public class RedisKeyUtil {
     private static final String PREFIX_USER_ID_COUNT = "likeCount:user";
     private static final String PREFIX_FOLLOWER_ID_ZSET = "follower:set";
     private static final String PREFIX_FOLLOWEE_ID_ZSET = "followee:set";
+    private static final String PREFIX_UV = "uv";
+    private static final String PREFIX_DAU = "dau";
 
     //某个实体的赞
     //like:entity:entityType:entityId -> set(userId)存放的是该实体类对应的点赞用户id集合
@@ -36,5 +38,25 @@ public class RedisKeyUtil {
     //实体的粉丝列表只需要存储粉丝的id即可  所以对应的key中应该包含 当前实体的类型 和 实体的id
     public static String getFolloweeKey(int entityType,int entityId){
         return PREFIX_FOLLOWEE_ID_ZSET + SPLIT + entityType + SPLIT + entityId;
+    }
+
+    // 单日UV
+    public static String getUVKey(String date) {
+        return PREFIX_UV + SPLIT + date;
+    }
+
+    // 区间UV
+    public static String getUVKey(String startDate, String endDate) {
+        return PREFIX_UV + SPLIT + startDate + SPLIT + endDate;
+    }
+
+    // 单日活跃用户
+    public static String getDAUKey(String date) {
+        return PREFIX_DAU + SPLIT + date;
+    }
+
+    // 区间活跃用户
+    public static String getDAUKey(String startDate, String endDate) {
+        return PREFIX_DAU + SPLIT + startDate + SPLIT + endDate;
     }
 }

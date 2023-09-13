@@ -110,4 +110,11 @@ public class HomeController implements CommunityConstant {
     public String getErrorPage() {
         return "/error/500";
     }
+
+    //拒绝访问时的提示页面（越级访问）
+    @RequestMapping(path = "/denied", method = RequestMethod.GET)
+    public String getDeniedPage() {
+        //即使没有404相对应的图片或网站   springmvc会默认给出错误信息提示页面
+        return "/error/404";
+    }
 }
