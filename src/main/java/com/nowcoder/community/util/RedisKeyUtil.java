@@ -9,6 +9,7 @@ public class RedisKeyUtil {
     private static final String PREFIX_FOLLOWEE_ID_ZSET = "followee:set";
     private static final String PREFIX_UV = "uv";
     private static final String PREFIX_DAU = "dau";
+    private static final String PREFIX_POST = "post";
 
     //某个实体的赞
     //like:entity:entityType:entityId -> set(userId)存放的是该实体类对应的点赞用户id集合
@@ -59,4 +60,10 @@ public class RedisKeyUtil {
     public static String getDAUKey(String startDate, String endDate) {
         return PREFIX_DAU + SPLIT + startDate + SPLIT + endDate;
     }
+
+    // 需要更新分数的帖子id集合
+    public static String getPostKey(){
+        return PREFIX_POST + SPLIT + ":score";
+    }
+
 }

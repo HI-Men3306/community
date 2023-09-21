@@ -11,7 +11,7 @@ import java.util.List;
 public interface DiscussPostMapper {
     //根据id进行分页查询
     //当传入的id为0时代表默认查询 在xml文件中使用动态sql进行判断查询
-    List<DiscussPost> selectDiscussPost(int userId,int offset,int limit);
+    List<DiscussPost> selectDiscussPost(int userId,int offset,int limit,int orderMode);
 
     //根据id查询帖子的数量
     //同样的，在xml文件中使用动态sql进行判断查询
@@ -48,4 +48,16 @@ public interface DiscussPostMapper {
     //修改帖子类型
     @Update("update discuss_post set type = #{type} where id = #{id}")
     int updateType(int id, int type);
+
+    //修改帖子分数
+    @Update("update discuss_post set score = #{score} where id = #{id}")
+    int updateScore(int id, double score);
+
+    //查询帖子类型是置顶还是非置顶
+    @Select("select type from discuss_post where id = #{id}")
+    int selectType(int id);
+
+    //查询帖子状态是加精 还是 拉黑
+    @Select("select status from discuss_post where id = #{id}")
+    int selectStatus(int id);
 }

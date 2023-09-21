@@ -2,6 +2,7 @@ package com.nowcoder.community.controller;
 
 import com.nowcoder.community.Event.EventProducer;
 import com.nowcoder.community.entity.*;
+import com.nowcoder.community.redisOperate.RedisUpdateScore;
 import com.nowcoder.community.service.CommentService;
 import com.nowcoder.community.service.DiscussPostService;
 import com.nowcoder.community.service.LikeService;
@@ -41,6 +42,9 @@ public class DiscussPostController implements CommunityConstant {
     @Autowired
     private EventProducer eventProducer;
 
+    @Autowired
+    private RedisUpdateScore updateScore;
+
     //添加帖子
     @RequestMapping(path = "/add", method = RequestMethod.POST)
     @ResponseBody
@@ -63,6 +67,9 @@ public class DiscussPostController implements CommunityConstant {
                 .setEntityType(ENTITY_TYPE_POST)//事件类型为 帖子
                 .setTopic(TOPIC_PUBLISH);//事件主题为 发布
         eventProducer.sendEvent(event);
+
+        //计算帖子分数
+        updateScore.insertPostId(discuss.getId());
 
         //报错的情况统一后续统一进行处理
         return CommunityUtil.getJSONString(0, "发布成功!");
@@ -168,14 +175,18 @@ public class DiscussPostController implements CommunityConstant {
     }
 
 
-    //将帖子置顶
+    //帖子的置顶和取消置顶
     @RequestMapping(path = "/top",method =RequestMethod.POST)
     @ResponseBody
     public String setTop(int id){
-        //帖子类型设置为置顶
-        discussPostService.updateType(id,DISCUSS_STATUS_TOP);
+        //获取点击按钮之后 帖子的类型   1为置顶，0为正常状态,1^1=0 0^1=1
+        int type = discussPostService.selectType(id) ^ 1;
+        //更新帖子置顶状态   status为更新后帖子的置顶类型
+        discussPostService.updateType(id, type);
 
-        System.out.println("置顶");
+        //将更新后的状态返回
+        HashMap<String,Object> map = new HashMap<>();
+        map.put("type",type);
 
         //修改elasticsearch中的数据  修改帖子之后重新发布 elasticsearch会覆盖掉之前的数据
         Event event = new Event().setEntityId(id)//存放帖子id
@@ -184,17 +195,24 @@ public class DiscussPostController implements CommunityConstant {
                 .setTopic(TOPIC_PUBLISH);//事件主题为 发布
         eventProducer.sendEvent(event);
 
-        return CommunityUtil.getJSONString(0);
+        return CommunityUtil.getJSONString(0,null,map);
     }
 
-    //将帖子加入精华帖
+    //将帖子加入精华帖 和 取消精华帖
     @RequestMapping(path = "/essence",method =RequestMethod.POST)
     @ResponseBody
     public String setEssence(int id){
-        //帖子状态设置为精华
-        discussPostService.updateStatus(id,DISCUSS_TYPE_ESSENCE);
 
-        System.out.println("精华");
+        //获取点击按钮之后 帖子的状态   1为置顶，0为正常状态,1^1=0 0^1=1
+        int status =  discussPostService.selectStatus(id) ^ 1;
+
+        //修改帖子的状态
+        discussPostService.updateStatus(id,status);
+
+        //将更新后的状态返回
+        HashMap<String,Object> map = new HashMap<>();
+        map.put("status",status);
+
 
         //修改elasticsearch中的数据  修改帖子之后重新发布 elasticsearch会覆盖掉之前的数据
         Event event = new Event().setEntityId(id)//存放帖子id
@@ -203,7 +221,10 @@ public class DiscussPostController implements CommunityConstant {
                 .setTopic(TOPIC_PUBLISH);//事件主题为 发布
         eventProducer.sendEvent(event);
 
-        return CommunityUtil.getJSONString(0);
+        //计算帖子分数
+        updateScore.insertPostId(id);
+
+        return CommunityUtil.getJSONString(0,null,map);
     }
 
     //将帖子拉黑

@@ -75,6 +75,11 @@ public interface CommunityConstant {
     String TOPIC_DELETE = "delete";
 
     /**
+     * 主题: 分享
+     */
+    String TOPIC_SHARE = "share";
+
+    /**
      * 系统用户ID
      */
     int SYSTEM_USER_ID = 1;
@@ -94,26 +99,6 @@ public interface CommunityConstant {
      * 权限: 版主
      */
     String AUTHORITY_MODERATOR = "moderator";
-
-    /**
-     * 帖子类型:置顶
-     */
-    int DISCUSS_STATUS_TOP = 1;
-
-    /**
-     * 帖子类型:普通
-     */
-    int DISCUSS_STATUS_COMMON = 0;
-
-    /**
-     * 帖子状态：正常
-     */
-    int DISCUSS_TYPE_COMMON = 0;
-
-    /**
-     * 帖子状态：精华
-     */
-    int DISCUSS_TYPE_ESSENCE = 1;
 
     /**
      * 帖子状态：拉黑

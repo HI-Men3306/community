@@ -11,7 +11,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
 
+//弃用
+//引入security之后，替代了LoginRequiredInterceptor过滤器
 //这个过滤器用于 过滤未登录用户访问敏感资源地址
+@Deprecated
 @Component
 public class LoginRequiredInterceptor implements HandlerInterceptor {
     @Autowired

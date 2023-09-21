@@ -54,9 +54,9 @@ public class elasticsearchTest {
 
     @Test
     public void insertSomeData(){
-        discussRepository.saveAll(discussMapper.selectDiscussPost(101,0,100));
-        discussRepository.saveAll(discussMapper.selectDiscussPost(102,0,100));
-        discussRepository.saveAll(discussMapper.selectDiscussPost(103,0,100));
+        discussRepository.saveAll(discussMapper.selectDiscussPost(101,0,100,0));
+        discussRepository.saveAll(discussMapper.selectDiscussPost(102,0,100,0));
+        discussRepository.saveAll(discussMapper.selectDiscussPost(103,0,100,0));
     }
 
     @Test

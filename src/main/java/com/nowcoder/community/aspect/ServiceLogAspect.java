@@ -16,6 +16,7 @@ import java.util.Date;
 
 @Aspect
 @Component
+//切片 用于记录日志 xxx用户在xxx时刻访问了xxx资源
 public class ServiceLogAspect {
     private static final Logger logger = LoggerFactory.getLogger(ServiceLogAspect.class);
 

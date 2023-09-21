@@ -39,7 +39,7 @@ public class TheNewMapperTest {
 
     @Test
     public void TestOfService(){
-        List<DiscussPost> discussPosts = discussPostService.SelectDiscussPost(101, 0, 100);
+        List<DiscussPost> discussPosts = discussPostService.SelectDiscussPost(101, 0, 100,0);
         for (DiscussPost discussPost : discussPosts) {
             System.out.println(discussPost);
         }
@@ -53,7 +53,7 @@ public class TheNewMapperTest {
 
     @Test
     public void TestOfDiscussPost(){
-        List<DiscussPost> discussPosts = discussPostMapper.selectDiscussPost(0, 0, 10);
+        List<DiscussPost> discussPosts = discussPostMapper.selectDiscussPost(0, 0, 10,0);
         for (DiscussPost discussPost : discussPosts) {
             System.out.println(discussPost);
         }

@@ -5,6 +5,7 @@ import com.nowcoder.community.entity.Comment;
 import com.nowcoder.community.entity.DiscussPost;
 import com.nowcoder.community.entity.Event;
 import com.nowcoder.community.entity.Message;
+import com.nowcoder.community.redisOperate.RedisUpdateScore;
 import com.nowcoder.community.service.CommentService;
 import com.nowcoder.community.service.DiscussPostService;
 import com.nowcoder.community.util.CommunityConstant;
@@ -34,6 +35,9 @@ public class CommentController implements CommunityConstant {
 
     @Autowired
     private EventProducer eventProducer;
+
+    @Autowired
+    private RedisUpdateScore updateScore;
 
     //为什么要携带一个discussPostId？   因为添加成功评论之后，我们要重定向到帖子详情页面  而显示帖子详情controller需要帖子的id
     @RequestMapping(path = "/add/{discussPostId}",method = RequestMethod.POST)
@@ -81,6 +85,9 @@ public class CommentController implements CommunityConstant {
                     .setEntityId(discussPostId);//帖子编号
             eventProducer.sendEvent(event);
         }
+
+        //计算帖子分数
+        updateScore.insertPostId(discussPostId);
 
         return "redirect:/discuss/detail/" + discussPostId;
     }

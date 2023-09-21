@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+//统一的异常处理
+//如果是异步请求 返回json   普通请求 重定向到500错误界面
 @ControllerAdvice(annotations = Controller.class)//只扫描带有controller注解的bean
 public class ExceptionAdvice {
 

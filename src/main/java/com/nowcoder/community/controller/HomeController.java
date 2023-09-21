@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,7 +32,10 @@ public class HomeController implements CommunityConstant {
 
 
     @RequestMapping(path = "/index", method = RequestMethod.GET)
-    public String getIndexPage(Model model, Page page) {
+    //orderMode是标志以什么样的方式来展现帖子列表  时间排列0 还是 热度排列1   默认为0
+    public String getIndexPage(Model model, Page page,
+                               @RequestParam(name = "orderMode", defaultValue = "0") int orderMode) {
+        System.out.println(orderMode);
         // 方法调用前,SpringMVC会自动实例化Model和Page,并将Page注入Model.
         // 所以,在thymeleaf中可以直接访问Page对象中的数据.
         page.setRows(discussPostService.SelectCount(0));
@@ -40,10 +44,10 @@ public class HomeController implements CommunityConstant {
         //当点击页码之后，会重新发送一个请求，而请求的地址就是page中的path，
         //而且会在地址的后面拼接上current参数并自动封装进page中表明要跳转到第几页
         //后面检索的数据会根据当前页数 查询对应范围内的数据
-        page.setPath("/index");
+        page.setPath("/index?orderMode=" + orderMode);
 
         //这里根据返回的page中的current当前页数  计算出要查询数据的范围
-        List<DiscussPost> list = discussPostService.SelectDiscussPost(0, page.getOffset(), page.getLimit());
+        List<DiscussPost> list = discussPostService.SelectDiscussPost(0, page.getOffset(), page.getLimit(),orderMode);
         //因为要展示给前端视图 需要user 和 discussPost两个信息 所以要将其对应起来
         //所以使用list嵌套map  每一个map中存放当前帖子的信息和发帖人的信息
         List<Map<String, Object>> discussPosts = new ArrayList<>();
@@ -62,6 +66,7 @@ public class HomeController implements CommunityConstant {
         }
         model.addAttribute("discussPosts", discussPosts);
         model.addAttribute(page);
+        model.addAttribute("orderMode",orderMode);
         return "/index";
     }
 
@@ -90,7 +95,7 @@ public class HomeController implements CommunityConstant {
 
         System.out.println("进入index");
 
-        List<DiscussPost> list = discussPostService.SelectDiscussPost(0, page.getOffset(), page.getLimit());
+        List<DiscussPost> list = discussPostService.SelectDiscussPost(0, page.getOffset(), page.getLimit(),0);
         List<Map<String, Object>> discussPosts = new ArrayList<>();
         if (list != null) {
             for (DiscussPost post : list) {

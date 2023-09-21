@@ -4,6 +4,7 @@ import com.nowcoder.community.Event.EventProducer;
 import com.nowcoder.community.annotation.LoginRequired;
 import com.nowcoder.community.entity.Event;
 import com.nowcoder.community.entity.User;
+import com.nowcoder.community.redisOperate.RedisUpdateScore;
 import com.nowcoder.community.service.LikeService;
 import com.nowcoder.community.util.CommunityConstant;
 import com.nowcoder.community.util.CommunityUtil;
@@ -26,6 +27,9 @@ public class LikeController implements CommunityConstant {
 
     @Autowired
     private EventProducer eventProducer;
+
+    @Autowired
+    private RedisUpdateScore updateScore;
 
     //点赞功能
     @RequestMapping(path = "/like",method = RequestMethod.POST)
@@ -55,6 +59,12 @@ public class LikeController implements CommunityConstant {
             //发送消息
             eventProducer.sendEvent(event);
         }
+
+        //如果是给帖子点赞的 就计算帖子分数
+        if(entityType == ENTITY_TYPE_POST){
+            updateScore.insertPostId(postId);
+        }
+
         return CommunityUtil.getJSONString(CODE_SUCCESS,null,map);
     }
 

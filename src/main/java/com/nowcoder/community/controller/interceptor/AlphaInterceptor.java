@@ -2,6 +2,9 @@ package com.nowcoder.community.controller.interceptor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -12,7 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 @Component
 public class AlphaInterceptor implements HandlerInterceptor {
 
-    private static final Logger logger = LoggerFactory.getLogger(AlphaInterceptor.class);
+    private static Logger logger = LoggerFactory.getLogger(AlphaInterceptor.class);
+
 
     //在controller之前执行  （即发送请求之后，在controller接收请求之前）
     @Override
@@ -31,4 +35,5 @@ public class AlphaInterceptor implements HandlerInterceptor {
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         logger.debug("afterCompletion" + handler.toString());
     }
+
 }
