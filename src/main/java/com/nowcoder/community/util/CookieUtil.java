@@ -10,11 +10,14 @@ public class CookieUtil {
             throw new IllegalArgumentException("获取登录凭证参数为空");
         }
         Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
-            if(cookie.getName().equals(name)){
-                return cookie.getValue();
+        //这里一定要判断cookies 不为空  因为可能存在cookies一个都没有
+        //例如使用jMeter进行测试时，发送的请求就不携带任何cookie
+        if(cookies != null)
+            for (Cookie cookie : cookies) {
+                if(cookie.getName().equals(name)){
+                    return cookie.getValue();
+                }
             }
-        }
         return null;
     }
 }
